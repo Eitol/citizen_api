@@ -4,6 +4,7 @@ import (
 	"connectrpc.com/grpchealth"
 	"context"
 	"errors"
+	"github.com/Eitol/citizen_api/internal/citizen/domain"
 	"github.com/Eitol/citizen_api/internal/citizen/repositories/citizenrepo"
 	"github.com/Eitol/citizen_api/internal/citizen/usecases"
 	"github.com/Eitol/citizen_api/pkg/citizendb/cl"
@@ -13,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -41,36 +43,46 @@ func (s *Server) createHandler(serviceName string, f func() (string, http.Handle
 	))
 }
 
-func (s *Server) Run() {
-	s.mux = http.NewServeMux()
+func createCitizenRepository() domain.CitizenRepository {
+	startTime := time.Now()
 	log.Println("CL DB: loading")
 	clDB, err := cl.NewDB("scripts/assets/citizen/cl_unified_person_list.gob")
 	if err != nil {
 		log.Fatalf("error creating cl db: %v", err)
 	}
-	log.Println("CL DB: loaded")
+	log.Printf("CL DB: loaded in %v\n", time.Since(startTime))
 
+	startTime = time.Now()
 	log.Println("Name list: loading")
 	idVsNameDB, err := names.LoadIDVsNameDB("scripts/assets/citizen/names_list.gob")
 	if err != nil {
 		log.Fatalf("error loading id vs name db: %v", err)
 	}
-	log.Println("Name list: loaded")
+	log.Printf("Name list: loaded in %v\n", time.Since(startTime))
 
+	startTime = time.Now()
 	log.Println("VE DB: loading")
 	veDB, err := ve.NewCitizenDB(
 		"scripts/assets/citizen/ve_optimized_citizen.gob",
 		"scripts/assets/citizen/ve_optimized_names.gob",
 		idVsNameDB,
 	)
-	log.Println("VE DB: loaded")
+	log.Printf("VE DB: loaded in %v\n", time.Since(startTime))
 	if err != nil {
 		log.Fatalf("error creating ve db: %v", err)
 	}
-	repo := citizenrepo.NewMultiCountryCitizenRepository(
+	runtime.GC()
+	runtime.GC()
+	runtime.GC()
+	return citizenrepo.NewMultiCountryCitizenRepository(
 		clDB,
 		veDB,
 	)
+}
+
+func (s *Server) Run() {
+	s.mux = http.NewServeMux()
+	repo := createCitizenRepository()
 	uc := usecases.NewFindByIDUC(repo)
 	handler := handlers.NewCitizenHandler(uc)
 	s.createHandler(apiv1connect.CitizenServiceName, func() (string, http.Handler) {

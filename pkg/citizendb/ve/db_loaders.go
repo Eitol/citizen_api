@@ -1,7 +1,6 @@
 package ve
 
 import (
-	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
@@ -9,7 +8,7 @@ import (
 )
 
 func loadLocationIndex() (map[ParishID]Location, error) {
-	idx := map[ParishID]Location{}
+	idx := make(map[ParishID]Location, 1142)
 	err := json.Unmarshal(locationMapStr, &idx)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling location index: %w", err)
@@ -18,12 +17,12 @@ func loadLocationIndex() (map[ParishID]Location, error) {
 }
 
 func loadCitizenDB(dbFilePath string) ([]OptimizedCitizen, error) {
-	fileReader, err := os.ReadFile(dbFilePath)
+	fileReader, err := os.Open(dbFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading citizen DB file: %w", err)
 	}
-	var dbr []OptimizedCitizen
-	gobDev := gob.NewDecoder(bytes.NewReader(fileReader))
+	dbr := make([]OptimizedCitizen, 30_000_001)
+	gobDev := gob.NewDecoder(fileReader)
 	err = gobDev.Decode(&dbr)
 	if err != nil {
 		return nil, fmt.Errorf("error decoding citizen DB file: %w", err)
@@ -32,28 +31,14 @@ func loadCitizenDB(dbFilePath string) ([]OptimizedCitizen, error) {
 }
 
 func loadNameDB(dbNameFilePath string) (map[uint32][]uint32, error) {
-	citizenNameDBBytes, err := os.ReadFile(dbNameFilePath)
+	citizenNameDBBytes, err := os.Open(dbNameFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading citizen names DB file: %w", err)
 	}
-	var citizenNameDB map[uint32][]uint32
-	citizenNameDBBytesReader := bytes.NewReader(citizenNameDBBytes)
-	err = gob.NewDecoder(citizenNameDBBytesReader).Decode(&citizenNameDB)
+	citizenNameDB := make(map[uint32][]uint32, 20889561)
+	err = gob.NewDecoder(citizenNameDBBytes).Decode(&citizenNameDB)
 	if err != nil {
 		return nil, fmt.Errorf("error decoding citizen names DB file: %w", err)
 	}
 	return citizenNameDB, nil
-}
-
-func loadIDVsNameMap(idVSNamePath string) (map[uint32]string, error) {
-	idVSNameMap := map[uint32]string{}
-	idVSNameBytes, err := os.ReadFile(idVSNamePath)
-	if err != nil {
-		return nil, fmt.Errorf("error reading ID vs Name map file: %w", err)
-	}
-	err = gob.NewDecoder(bytes.NewReader(idVSNameBytes)).Decode(&idVSNameMap)
-	if err != nil {
-		return nil, fmt.Errorf("error decoding ID vs Name map file: %w", err)
-	}
-	return idVSNameMap, nil
 }
