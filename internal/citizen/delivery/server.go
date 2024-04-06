@@ -92,7 +92,7 @@ func (s *Server) Run() {
 		)
 	})
 
-	addr := "localhost:8080"
+	addr := ":8080"
 	if port := os.Getenv("PORT"); port != "" {
 		addr = ":" + port
 	}
