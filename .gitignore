@@ -3,4 +3,5 @@
 *.svg
 cover.out
 .dart_tool/
+.idea/
 scripts/assets
