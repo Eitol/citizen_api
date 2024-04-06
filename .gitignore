@@ -1,0 +1,6 @@
+/.tmp/
+*.pprof
+*.svg
+cover.out
+
+scripts/assets

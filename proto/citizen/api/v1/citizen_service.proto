@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package shipment.api.v1;
+
+message Location {
+  string country = 1;
+  string state = 2;
+  string municipality = 3;
+  string parish = 4;
+  string location_id = 5;
+  double latitude = 6;
+  double longitude = 7;
+}
+
+message DocumentID {
+  string number = 1;
+  Location location = 2;
+}
+
+message Citizen {
+  string name = 1;
+  repeated DocumentID documents = 2;
+}
+
+enum MatchType {
+  MATCH_TYPE_UNSPECIFIED = 0;
+  MATCH_TYPE_BY_DOCUMENT_ID = 1;
+  MATCH_TYPE_BY_NAME = 2;
+}
+
+message FindCitizenResult {
+  Citizen citizen = 1;
+  MatchType match_type = 2;
+}
+
+service CitizenService {
+  rpc FindCitizenByDocId(FindCitizenByDocIdRequest) returns (FindCitizenByDocIdResponse);
+}
+
+message FindCitizenByDocIdRequest {
+  string document_id = 1;
+}
+
+message FindCitizenByDocIdResponse {
+  repeated FindCitizenResult results = 1;
+}
