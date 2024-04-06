@@ -63,8 +63,9 @@ func createCitizenRepository() domain.CitizenRepository {
 	startTime = time.Now()
 	log.Println("VE DB: loading")
 	veDB, err := ve.NewCitizenDB(
-		"scripts/assets/citizen/ve_optimized_citizen.gob",
-		"scripts/assets/citizen/ve_optimized_names.gob",
+		"scripts/assets/citizen/ve_optimized_names_list.gob",
+		"scripts/assets/citizen/ve_optimized_locations.gob",
+		"scripts/assets/citizen/ve_optimized_names_unique.gob",
 		idVsNameDB,
 	)
 	log.Printf("VE DB: loaded in %v\n", time.Since(startTime))

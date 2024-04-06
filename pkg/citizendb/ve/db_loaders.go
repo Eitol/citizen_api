@@ -16,29 +16,40 @@ func loadLocationIndex() (map[ParishID]Location, error) {
 	return idx, nil
 }
 
-func loadCitizenDB(dbFilePath string) ([]OptimizedCitizen, error) {
+func loadCitizenDB(dbFilePath string, dbr *[][11]byte) error {
 	fileReader, err := os.Open(dbFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading citizen DB file: %w", err)
+		return fmt.Errorf("error reading citizen DB file: %w", err)
 	}
-	dbr := make([]OptimizedCitizen, 30_000_001)
 	gobDev := gob.NewDecoder(fileReader)
-	err = gobDev.Decode(&dbr)
+	err = gobDev.Decode(dbr)
 	if err != nil {
-		return nil, fmt.Errorf("error decoding citizen DB file: %w", err)
+		return fmt.Errorf("error decoding citizen DB file: %w", err)
 	}
-	return dbr, nil
+	return nil
 }
 
-func loadNameDB(dbNameFilePath string) (map[uint32][]uint32, error) {
+func loadCitizenLocationDB(dbFilePath string, dbr *[]uint16) error {
+	fileReader, err := os.Open(dbFilePath)
+	if err != nil {
+		return fmt.Errorf("error reading citizen DB file: %w", err)
+	}
+	gobDev := gob.NewDecoder(fileReader)
+	err = gobDev.Decode(dbr)
+	if err != nil {
+		return fmt.Errorf("error decoding citizen DB file: %w", err)
+	}
+	return nil
+}
+
+func loadNameDB(dbNameFilePath string, citizenNameDB *map[uint32]uint32) error {
 	citizenNameDBBytes, err := os.Open(dbNameFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading citizen names DB file: %w", err)
+		return fmt.Errorf("error reading citizen names DB file: %w", err)
 	}
-	citizenNameDB := make(map[uint32][]uint32, 20889561)
 	err = gob.NewDecoder(citizenNameDBBytes).Decode(&citizenNameDB)
 	if err != nil {
-		return nil, fmt.Errorf("error decoding citizen names DB file: %w", err)
+		return fmt.Errorf("error decoding citizen names DB file: %w", err)
 	}
-	return citizenNameDB, nil
+	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/Eitol/citizen_api/pkg/citizendb/shared"
 	"os"
+	"runtime"
 )
 
 type DB struct {
@@ -23,6 +24,7 @@ func NewDB(dbPath string) (*DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error decoding index file: %w", err)
 	}
+	runtime.GC()
 	err = indexFile.Close()
 	if err != nil {
 		return nil, fmt.Errorf("error closing index file: %w", err)
