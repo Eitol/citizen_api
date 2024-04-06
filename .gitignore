@@ -2,5 +2,5 @@
 *.pprof
 *.svg
 cover.out
-
+.dart_tool/
 scripts/assets

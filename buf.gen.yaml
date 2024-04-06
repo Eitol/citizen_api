@@ -12,3 +12,5 @@ plugins:
     opt: paths=source_relative
   - plugin: buf.build/protocolbuffers/dart:v21.1.2
     out: internal/gen/dart
+    opt: grpc
+
