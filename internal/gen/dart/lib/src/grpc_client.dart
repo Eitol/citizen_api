@@ -1,6 +1,8 @@
 import 'package:grpc/grpc.dart';
 
-import 'citizen_service.pbgrpc.dart';
+import 'grpc/citizen/api/v1/citizen_service.pbgrpc.dart';
+
+
 
 
 class CitizenServiceGrpcClient {

@@ -33,6 +33,7 @@ message FindCitizenResult {
   MatchType match_type = 2;
 }
 
+
 service CitizenService {
   rpc FindCitizenByDocId(FindCitizenByDocIdRequest) returns (FindCitizenByDocIdResponse);
 }

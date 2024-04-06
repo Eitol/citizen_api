@@ -11,6 +11,6 @@ plugins:
     out: internal/gen/go
     opt: paths=source_relative
   - plugin: buf.build/protocolbuffers/dart:v21.1.2
-    out: internal/gen/dart
+    out: internal/gen/dart/lib/src/grpc
     opt: grpc
 

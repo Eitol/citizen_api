@@ -1,4 +1,5 @@
-import 'grpc_client.dart';
+
+import 'package:citizen_api/citizen_api.dart';
 
 Future<void> main(List<String> args) async {
   final client = CitizenServiceGrpcClient(
